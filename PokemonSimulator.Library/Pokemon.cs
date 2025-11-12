@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace PokemonSimulator.Library
 {
-    internal abstract class Pokemon(string name, ElementType type, List<Attack> attacks) : IEvolvable
+    internal abstract class Pokemon(string name, List<Attack> attacks) : IEvolvable
     {
         public string Name { get; private set; } = name;
         public int Level { get; private set; } = 1;
-        public ElementType Type { get; } = type;
 
         private List<Attack> Attacks { get; } = attacks;
         private readonly Random _random = new Random();
