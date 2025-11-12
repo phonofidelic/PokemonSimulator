@@ -1,9 +1,10 @@
 ﻿namespace PokemonSimulator.Library
 {
-    public abstract class Pokemon(string name, List<Attack> attacks) : IEvolvable
+    public abstract class Pokemon(ElementType type, string name, List<Attack> attacks) : IEvolvable
     {
         public string Name { get; private set; } = name;
         public int Level { get; private set; } = 1;
+        public ElementType Type { get; private set; } = type;
 
         private List<Attack> Attacks { get; } = attacks;
         private readonly Random _random = new Random();
@@ -30,6 +31,10 @@
         public void RaiseLevel() {
             Level++;
             Console.WriteLine($"{Name} has leveled up! {Name} is now at level {Level}.");
+        }
+
+        public override string ToString() {
+            return $"{Name} is a level {Level} {Type} Pokemon.";
         }
     }
 }
