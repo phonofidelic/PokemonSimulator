@@ -12,10 +12,10 @@
         public void Evolve()
         {
             Level += 10;
-            Console.WriteLine($"{Name} is evolving...");
+            Console.WriteLine($"\n{Name} is evolving...");
             // ToDo: Change name
             // Name = newName
-            Console.WriteLine($"Now it is a{Name}and its level is {Level}");
+            Console.WriteLine($"Now it is a {Name} and its level is {Level}");
         }
 
         public void RandomAttack()
@@ -30,7 +30,7 @@
 
         public void RaiseLevel() {
             Level++;
-            Console.WriteLine($"{Name} has leveled up! {Name} is now at level {Level}.");
+            Console.WriteLine($"\n{Name} has leveled up! {Name} is now at level {Level}.");
         }
 
         public override string ToString() {
