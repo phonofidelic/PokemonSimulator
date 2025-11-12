@@ -1,5 +1,6 @@
 ﻿
 using PokemonSimulator.Library;
+using System.Collections.Generic;
 
 namespace Simulator
 {
@@ -7,6 +8,8 @@ namespace Simulator
     {
         private List<MenuListItem<Pokemon>> PokemonList = [];
         private MenuListItem<Pokemon>? MenuSelection = null;
+
+        private Exception? SimulationException = null;
 
         internal void Start()
         {
@@ -25,23 +28,39 @@ namespace Simulator
                 Console.WriteLine("Welcome to the Pokemon Simulator!");
                 Console.WriteLine("");
                 GeneratePokemonMenuList(1);
-                Console.WriteLine("Select a Pokemon from the menu");
-                Console.WriteLine("Here are your Pokemon:");
+                Console.WriteLine("\nSelect a Pokemon from the menu");
+                Console.WriteLine("Here are your Pokemon:\n");
 
                 foreach (MenuListItem<Pokemon> listItem in PokemonList)
                 {
-                    Console.WriteLine($"{listItem.Index}. {listItem.Value.Name}");
+                    Console.WriteLine($"\t{listItem.Index}. {listItem.Value.Name}");
                 }
 
-                Console.WriteLine("");
-                //charmander.RandomAttack();
-                //charmander.Evolve();
+                if (SimulationException != null)
+                {
+                    DisplaySimulationException(SimulationException.Message);
+                }
 
-                MenuSelection = GetSelectionFromMenu(PokemonList);
-                Console.WriteLine($"\n\t{MenuSelection.Value}");
+                try
+                {
+                    MenuSelection = GetSelectionFromMenu(PokemonList);
+                    Console.WriteLine($"\n\t{MenuSelection.Value}");
+                } catch (Exception ex)
+                {
+                    SimulationException = ex;
+                    
+                }
+                
             } while (MenuSelection == null);
             Console.WriteLine("\nPress any key to exit the simulator");
             Console.ReadKey(intercept: true);
+        }
+
+        private void DisplaySimulationException(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
         }
 
         private MenuListItem<T> GetSelectionFromMenu<T>(List<MenuListItem<T>> menuList)
@@ -57,6 +76,7 @@ namespace Simulator
 
         private void GeneratePokemonMenuList(int count)
         {
+            Console.WriteLine($"Generating {count} Pokemon...");
             Attack fireFang = new("Fire Fang", ElementType.Fire, 20);
             Attack heatTackle = new("Heat Tackle", ElementType.Fire, 30);
             Attack ember = new("Ember", ElementType.Fire, 40);
@@ -69,9 +89,13 @@ namespace Simulator
             ];
             Charmander charmander = new(attacks);
 
+            List<MenuListItem<Pokemon>> menuList = new();
+
             for (int i = 1; i <= count; i++) {
-                PokemonList.Add(new(i, charmander));
+                menuList.Add(new(i, charmander));
             }
+
+            PokemonList = menuList;
         }
     }
 }
