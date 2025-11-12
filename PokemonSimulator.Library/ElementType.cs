@@ -3,7 +3,7 @@
     public enum ElementType
     {
         Fire,
-        Watter,
+        Water,
         Grass
     }
 }

@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace PokemonSimulator.Library
+﻿namespace PokemonSimulator.Library
 {
-    internal class Attack(string name, ElementType type, int basePower)
+    public class Attack(string name, ElementType type, int basePower)
     {
         public string Name { get; } = name;
         public ElementType Type { get; } = type;

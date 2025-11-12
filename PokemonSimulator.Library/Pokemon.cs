@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PokemonSimulator.Library
+﻿namespace PokemonSimulator.Library
 {
-    internal abstract class Pokemon(string name, List<Attack> attacks) : IEvolvable
+    public abstract class Pokemon(string name, List<Attack> attacks) : IEvolvable
     {
         public string Name { get; private set; } = name;
         public int Level { get; private set; } = 1;
