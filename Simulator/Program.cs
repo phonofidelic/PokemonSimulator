@@ -1,6 +1,4 @@
-﻿using PokemonSimulator.Library;
-
-namespace Simulator
+﻿namespace Simulator
 {
     internal class Program
     {

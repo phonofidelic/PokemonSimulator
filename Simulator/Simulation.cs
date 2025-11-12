@@ -1,6 +1,5 @@
 ﻿
 using PokemonSimulator.Library;
-using System.Collections.Generic;
 
 namespace Simulator
 {
