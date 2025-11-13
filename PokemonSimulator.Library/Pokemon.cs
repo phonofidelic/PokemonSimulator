@@ -1,6 +1,6 @@
 ﻿namespace PokemonSimulator.Library
 {
-    public abstract class Pokemon(ElementType type, string name, List<Attack> attacks)
+    public abstract class Pokemon(ElementType type, string name, List<Attack> attacks) : IEvolvable
     {
         public string Name { get; protected set; } = name;
         public int Level { get; protected set; } = 1;
@@ -8,6 +8,8 @@
 
         public List<Attack> Attacks { get; protected set; } = attacks;
         private readonly Random _random = new Random();
+
+        public abstract void Evolve();
 
         public void RandomAttack()
         {

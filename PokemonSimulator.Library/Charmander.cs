@@ -5,7 +5,7 @@ namespace PokemonSimulator.Library
     public class Charmander(List<Attack> attacks) : 
         FirePokemon("Charmander", attacks), IEvolvable
     {
-        public void Evolve()
+        public override void Evolve()
         {
             Level += 10;
             Console.WriteLine($"\n{Name} is evolving...");
