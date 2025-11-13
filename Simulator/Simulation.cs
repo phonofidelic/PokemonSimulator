@@ -44,6 +44,14 @@ namespace Simulator
                 {
                     MenuSelection = GetSelectionFromMenu(PokemonList);
                     Console.WriteLine($"\n\t{MenuSelection.Value}");
+                    foreach (Attack attack in MenuSelection.Value.Attacks)
+                    {
+                        Console.Write($"\n\t{MenuSelection.Value.Name} knows ");
+                        Console.ForegroundColor = attack.ElementColor;
+                        Console.Write($"{attack}");
+                        Console.ResetColor();
+                    }
+                    Console.WriteLine();
                 } catch (Exception ex)
                 {
                     SimulationException = ex;
@@ -80,11 +88,13 @@ namespace Simulator
             Attack heatTackle = new("Heat Tackle", ElementType.Fire, 30);
             Attack ember = new("Ember", ElementType.Fire, 40);
             Attack waterGun = new("Water Gun", ElementType.Water, 20);
+            Attack vineWhip = new("Vine Whip", ElementType.Grass, 50);
             List<Attack> attacks = [
                 fireFang,
                 heatTackle,
                 ember,
                 waterGun, //<- Should throw type error when added to Charmander?
+                vineWhip, //<- Should throw type error when added to Charmander?
             ];
             Charmander charmander = new(attacks);
 
