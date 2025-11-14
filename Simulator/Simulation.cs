@@ -42,11 +42,16 @@ namespace Simulator
                             ConsoleUI.ResetColor();
                         }
                     }
+                    void renderEvolve()
+                    {
+                        pokemon.Evolve();
+                    }
+                    ;
                     var pokemonInfoMenuList = new MenuList<string, MenuListItem<string>>
                 {
                     
                     new MenuListItem<string>(1, "Show Attacks", renderShowAttacksUI),
-                    new MenuListItem<string>(2, "Evolve"),
+                    new MenuListItem<string>(2, "Evolve", renderEvolve),
                     new MenuListItem<string>(3, "Go back to Pokemon list")
                 };
                     var pokemonInfoMenu = new Menu<string>($"{pokemon.Name} info", pokemonInfoMenuList, renderPokemonInfoMenuIntroUI);
