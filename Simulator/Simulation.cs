@@ -3,47 +3,45 @@ using PokemonSimulator.Library;
 using Simulator.UI;
 using System.Collections.Generic;
 
-
 namespace Simulator
 {
-    delegate void MenuListItemDisplayCallback<T>(int command, T value);
     internal class Simulation
     {
-        //private List<MenuListItem<Pokemon>> PokemonList = [];
-        //private MenuList<Pokemon> PokemonMenu;
-
         private Menu<Pokemon> _simulationMenu;
-        private MenuList<Pokemon, MenuListItem<Pokemon>> _pokemonMenuList { get; }
-        private int? MenuSelectionIndex = null;
-
-        private Exception? SimulationException = null;
 
         public Simulation()
         {
-            var pokemonList = GeneratePokemon(1);
-            MenuList<string, MenuListItem<string>> pokemonInfoMenuList = new();
-           
-
-            pokemonInfoMenuList.Add(new(1, "Show Attacks"));
-            pokemonInfoMenuList.Add(new(2, "Evolve"));
-            pokemonInfoMenuList.Add(new(3, "Go back to Pokemon list"));
-            //var pokemonInfoMenu = new Menu<string>(pokemonInfoMenuList);
-            MenuListItemDisplayCallback<Pokemon> pokemonMenuListItemDisplayCallback = (command, value) => {
-                Console.Clear();
-                ConsoleUI.WriteLine($"Sowing details for {value.Name}");
-                ConsoleUI.WriteLine($"\nWhat would you like to do with {value.Name}?");
+            var pokemonList = GeneratePokemon(3);
+            MenuIntroDisplayCallback simulationMenuIntroDisplayCallback = () =>
+            {
+                ConsoleUI.WriteLine("Welcome to the Pokemon Simulator!");
                 ConsoleUI.WriteLine("");
-                ConsoleUI.WriteLine($"\n\t{1}. Show Attacks");
-                ConsoleUI.WriteLine($"\n\t{2}. Evolve");
-                ConsoleUI.WriteLine($"\n\t{2}. Go back to Pokemon list");
+            };
+            
+            MenuListItemDisplayCallback<Pokemon> pokemonMenuListItemDisplayCallback = (command, value) => {
+                void pokemonInfoMenuIntroDisplayCallback()
+                {
+                    ConsoleUI.WriteLine($"Showing details for {value.Name}");
+                    ConsoleUI.WriteLine($"\nWhat would you like to do with {value.Name}?");
+                    ConsoleUI.WriteLine("");
+                }
+                var pokemonInfoMenuList = new MenuList<string, MenuListItem<string>>
+                {
+                    new MenuListItem<string>(1, "Show Attacks"),
+                    new MenuListItem<string>(2, "Evolve"),
+                    new MenuListItem<string>(3, "Go back to Pokemon list")
+                };
+                var pokemonInfoMenu = new Menu<string>(pokemonInfoMenuList, pokemonInfoMenuIntroDisplayCallback);
+ 
+                pokemonInfoMenu.Display();
                 ConsoleUI.ReadKey(intercept: true);
             };
-            _pokemonMenuList = new();
+            MenuList<Pokemon, MenuListItem<Pokemon>>  pokemonMenuList = new();
             for (var i = 0; i < pokemonList.Count; i++) 
             {
-                _pokemonMenuList.Add(new MenuListItem<Pokemon>(i + 1, pokemonList[i], pokemonMenuListItemDisplayCallback));
+                pokemonMenuList.Add(new MenuListItem<Pokemon>(i + 1, pokemonList[i], pokemonMenuListItemDisplayCallback));
             }
-            _simulationMenu = new Menu<Pokemon>(_pokemonMenuList);
+            _simulationMenu = new Menu<Pokemon>(pokemonMenuList, simulationMenuIntroDisplayCallback);
 
         }
 
@@ -219,7 +217,7 @@ namespace Simulator
 
         private static List<Pokemon> GeneratePokemon(int count)
         {
-            Console.WriteLine($"Generating {count} Pokemon...");
+            ConsoleUI.WriteLine($"Generating {count} Pokemon...");
             Attack fireFang = new("Fire Fang", ElementType.Fire, 20);
             Attack heatTackle = new("Heat Tackle", ElementType.Fire, 30);
             Attack ember = new("Ember", ElementType.Fire, 40);
@@ -232,8 +230,12 @@ namespace Simulator
                 waterGun, //<- Should throw type error when added to Charmander?
                 vineWhip, //<- Should throw type error when added to Charmander?
             ];
-            Charmander charmander = new(attacks);
-            return [charmander];
+            List<Pokemon> result = new List<Pokemon>();
+            for (int i = 0; i < count; i++)
+            {
+                result.Add(new Charmander(attacks));
+            }
+            return result;
         }
 
         //private void GeneratePokemonMenuList(int count)

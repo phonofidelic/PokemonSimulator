@@ -3,6 +3,7 @@ using Simulator.UI;
 
 namespace Simulator
 {
+    delegate void MenuIntroDisplayCallback();
     //public class Menu<T, I> : Menu<T> where I : Menu<T>
     //{
 
@@ -11,13 +12,17 @@ namespace Simulator
     {
         protected int? _selectedCommand { get; private set; } = null;
         public Exception? MenuException { get; private set; } = null;
+        private MenuIntroDisplayCallback? _menuIntroDisplayCallback = null;
 
         private MenuList<T, MenuListItem<T>> _menuList;
-        //private MenuList<T, MenuListItem<T>>? _subMenuList;
-        //internal Menu(MenuList<T, MenuListItem<T>> menuList, MenuList<string, MenuListItem<string>> subMenuList = null)
         internal Menu(MenuList<T, MenuListItem<T>> menuList)
         {
-           _menuList = menuList;
+            _menuList = menuList;
+        }
+        internal Menu(MenuList<T, MenuListItem<T>> menuList, MenuIntroDisplayCallback introDisplayCallback)
+        {
+            _menuList = menuList;
+            _menuIntroDisplayCallback = introDisplayCallback;
         }
 
         public void Display()
@@ -25,8 +30,7 @@ namespace Simulator
             do
             {
                 ConsoleUI.Clear();
-                ConsoleUI.WriteLine("Welcome to the Pokemon Simulator!");
-                ConsoleUI.WriteLine("");
+                _menuIntroDisplayCallback?.Invoke();
 
                 try
                 {
@@ -41,12 +45,12 @@ namespace Simulator
                     // Display next IDisplayable
                     _menuList.Get(_selectedCommand).Display();
                 }
-                catch (Exception ex) { 
+                catch (Exception ex) {
                     MenuException = ex;
                     _selectedCommand = null;
                 }
             } while (_selectedCommand == null);
-
+        
             ConsoleUI.WriteLine("\nPress any key to exit the simulator");
             ConsoleUI.ReadKey(intercept: true);
         }

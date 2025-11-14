@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace Simulator
 {
+    delegate void MenuListItemDisplayCallback<T>(int command, T value);
     // ToDo: Pass in Display method as a dependency?
     internal class MenuListItem<T> : IDisplayable
     {
