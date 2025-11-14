@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Simulator
 {
-    internal class MenuList<T, I> : IEnumerable<I>, IDisplayable where I : MenuListItem<T>
+    internal class MenuList<T, I> : IEnumerable<I>, IDisplayable, ICommandable where I : MenuListItem<T>
     {
         private List<MenuListItem<T>> _list = [];
         internal MenuList() { }
@@ -46,7 +46,11 @@ namespace Simulator
             }
         }
 
-        public int GetSelectionIndexFromKeyPress()
+        public int GetCommand()
+        {
+            return GetSelectionIndexFromKeyPress();
+        }
+        private int GetSelectionIndexFromKeyPress()
         {
             var keyPressed = ConsoleUI.ReadKey(intercept: true).KeyChar.ToString();
             var isIndex = int.TryParse(keyPressed, out int index);
@@ -56,6 +60,7 @@ namespace Simulator
 
             return index;
         }
+        
         public IEnumerator<I> GetEnumerator()
         {
             foreach (I item in _list)

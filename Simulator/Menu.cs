@@ -39,7 +39,7 @@ namespace Simulator
                         DisplayMenuException(MenuException.Message);
                     }
                     _menuList.Display();
-                    _selectedCommand = _menuList.GetSelectionIndexFromKeyPress();
+                    _selectedCommand = _menuList.GetCommand();
                     MenuException = null;
 
                     // Display next IDisplayable

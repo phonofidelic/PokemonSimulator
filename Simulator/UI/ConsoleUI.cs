@@ -15,7 +15,8 @@ namespace Simulator.UI
             }
         }
 
-        public static void WriteLine(string input) => Console.WriteLine(input);
+        public static void WriteLine(string? input) => Console.WriteLine(input);
+        public static void Write(string? input) => Console.Write(input);
         public static ConsoleKeyInfo ReadKey(bool intercept) => Console.ReadKey(intercept);
 
         internal static void Clear() => Console.Clear();
