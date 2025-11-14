@@ -26,6 +26,6 @@
             Console.WriteLine($"\n{Name} has leveled up! {Name} is now at level {Level}.");
         }
 
-        public override string ToString() =>  $"{Name} is a level {Level} {Type} Pokemon.";
+        public override string ToString() =>  Name;
     }
 }

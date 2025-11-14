@@ -1,12 +1,7 @@
-﻿using Simulator.UI;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
+using UI;
 
-namespace Simulator
+namespace MenuSystem
 {
     internal class MenuList<T, I> : IEnumerable<I>, IDisplayable, ICommandable where I : MenuListItem<T>
     {
@@ -20,22 +15,19 @@ namespace Simulator
             }
         }
 
-        public void Add (MenuListItem<T> item)
+        public void Add(MenuListItem<T> item)
         {
             // ToDo: Turn this into a type error, maybe by typing `Command` as an enum instead of an int?
             if (_list.Exists(p => p.Command == item.Command))
                 throw new Exception($"Could not add item '{item.Value}' with command '{item.Command}' in MenuList. The command already exists");
-            
+
             _list.Add(item);
         }
 
         public MenuListItem<T> Get(int? command)
         {
-            var selectedItem = _list.FirstOrDefault(i => i.Command == command);
-            if (selectedItem == null)
-                throw new Exception($"'{command}' is not a valid command");
-
-            return selectedItem;
+            var selectedItem = _list.FirstOrDefault(item => item.Command == command);
+            return selectedItem ?? throw new Exception($"'{command}' is not a valid command");
         }
 
         public void Display()
@@ -44,6 +36,12 @@ namespace Simulator
             {
                 ConsoleUI.WriteLine($"\n\t{item}");
             }
+        }
+
+        // ToDo: Remove this
+        public void DisplayCommand()
+        {
+            ConsoleUI.WriteLine("ToDo: This should not be called from a MenuList");
         }
 
         public int GetCommand()
@@ -60,7 +58,7 @@ namespace Simulator
 
             return index;
         }
-        
+
         public IEnumerator<I> GetEnumerator()
         {
             foreach (I item in _list)

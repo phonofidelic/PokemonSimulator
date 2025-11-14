@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
     <ProjectReference Include="..\PokemonSimulator.Library\PokemonSimulator.Library.csproj" />
+    <ProjectReference Include="..\UI\UI.csproj" />
   </ItemGroup>
 
 </Project>

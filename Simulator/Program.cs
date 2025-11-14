@@ -4,8 +4,10 @@
     {
         static void Main(string[] args)
         {
-            Simulation simulation = new();
-            simulation.Start();
+            //DynamicSimulation simulation = new();
+            //simulation.Start();
+            HardCodedSimulation hardCodedSimulation = new();
+            hardCodedSimulation.Start();
         }
     }
 }

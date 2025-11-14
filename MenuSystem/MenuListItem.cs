@@ -1,15 +1,19 @@
-﻿using Simulator.UI;
-using System.Collections;
+﻿using UI;
 
-namespace Simulator
+namespace MenuSystem
 {
     //delegate void MenuListItemDisplayCallback<T>(int command, T value);
-    delegate void MenuListItemDisplayCallback();
-    internal class MenuListItem<T> : IDisplayable
+    public delegate void MenuListItemDisplayCallback();
+    public class MenuListItem<T> : IDisplayable
     {
-        public int Command { get; }
+        public int? Command { get; } = null;
         public T Value { get; protected set; }
         private MenuListItemDisplayCallback? _displayCallback = null;
+        public MenuListItem(T value)
+        {
+            Command = null;
+            Value = value;
+        }
         public MenuListItem(int command, T value)
         {
             Command = command;
@@ -27,10 +31,16 @@ namespace Simulator
             if (_displayCallback != null)
             {
                 _displayCallback();
-            } else
+            }
+            else
             {
                 ConsoleUI.WriteLine($"\n\t{this}");
             }
+        }
+
+        public void DisplayCommand()
+        {
+            ConsoleUI.WriteLine($"\n\t{this}");
         }
 
         public override string ToString() => $"{Command}. {Value}";
