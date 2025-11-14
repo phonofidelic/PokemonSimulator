@@ -11,43 +11,45 @@ namespace Simulator
 
         public Simulation()
         {
-            var pokemonList = GeneratePokemon(3);
-            MenuIntroDisplayCallback simulationMenuIntroDisplayCallback = () =>
+            // Set up menu UI
+            void simulationIntroUI()
             {
                 ConsoleUI.WriteLine("Welcome to the Pokemon Simulator!");
                 ConsoleUI.WriteLine("");
-            };
-            
-            MenuListItemDisplayCallback<Pokemon> pokemonMenuListItemDisplayCallback = (command, value) => {
-                void pokemonInfoMenuIntroDisplayCallback()
+            }
+
+            // Generate Pokemon List and create the root menu
+            var pokemonList = GeneratePokemon(3);
+            MenuList<Pokemon, MenuListItem<Pokemon>> pokemonMenuList = [];
+            for (var i = 0; i < pokemonList.Count; i++) 
+            {
+                var pokemon = pokemonList[i];
+                void pokemonMenuListItemDisplayCallback()
                 {
-                    ConsoleUI.WriteLine($"Showing details for {value.Name}");
-                    ConsoleUI.WriteLine($"\nWhat would you like to do with {value.Name}?");
-                    ConsoleUI.WriteLine("");
-                }
-                var pokemonInfoMenuList = new MenuList<string, MenuListItem<string>>
+                    void pokemonInfoMenuIntroUI()
+                    {
+                        ConsoleUI.WriteLine($"Showing details for {pokemon.Name}");
+                        ConsoleUI.WriteLine($"\nWhat would you like to do with {pokemon.Name}?\n");
+                    }
+                    var pokemonInfoMenuList = new MenuList<string, MenuListItem<string>>
                 {
                     new MenuListItem<string>(1, "Show Attacks"),
                     new MenuListItem<string>(2, "Evolve"),
                     new MenuListItem<string>(3, "Go back to Pokemon list")
                 };
-                var pokemonInfoMenu = new Menu<string>(pokemonInfoMenuList, pokemonInfoMenuIntroDisplayCallback);
- 
-                pokemonInfoMenu.Display();
-                ConsoleUI.ReadKey(intercept: true);
-            };
-            MenuList<Pokemon, MenuListItem<Pokemon>>  pokemonMenuList = new();
-            for (var i = 0; i < pokemonList.Count; i++) 
-            {
+                    var pokemonInfoMenu = new Menu<string>($"{pokemon.Name} info", pokemonInfoMenuList, pokemonInfoMenuIntroUI);
+
+                    pokemonInfoMenu.Display();
+                    ConsoleUI.ReadKey(intercept: true);
+                }
                 pokemonMenuList.Add(new MenuListItem<Pokemon>(i + 1, pokemonList[i], pokemonMenuListItemDisplayCallback));
             }
-            _simulationMenu = new Menu<Pokemon>(pokemonMenuList, simulationMenuIntroDisplayCallback);
-
+            _simulationMenu = new Menu<Pokemon>("Pokemon Simulator", pokemonMenuList, simulationIntroUI);
         }
 
         internal void Start()
         {
-
+            // Render the root menu
             _simulationMenu.Display();
         }
 

@@ -3,19 +3,19 @@ using System.Collections;
 
 namespace Simulator
 {
-    delegate void MenuListItemDisplayCallback<T>(int command, T value);
-    // ToDo: Pass in Display method as a dependency?
+    //delegate void MenuListItemDisplayCallback<T>(int command, T value);
+    delegate void MenuListItemDisplayCallback();
     internal class MenuListItem<T> : IDisplayable
     {
         public int Command { get; }
         public T Value { get; protected set; }
-        private MenuListItemDisplayCallback<T>? _displayCallback = null;
+        private MenuListItemDisplayCallback? _displayCallback = null;
         public MenuListItem(int command, T value)
         {
             Command = command;
             Value = value;
         }
-        public MenuListItem(int command, T value, MenuListItemDisplayCallback<T> callback)
+        public MenuListItem(int command, T value, MenuListItemDisplayCallback callback)
         {
             Command = command;
             Value = value;
@@ -26,7 +26,7 @@ namespace Simulator
         {
             if (_displayCallback != null)
             {
-                _displayCallback(Command, Value);
+                _displayCallback();
             } else
             {
                 ConsoleUI.WriteLine($"\n\t{this}");

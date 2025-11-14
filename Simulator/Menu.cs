@@ -4,23 +4,23 @@ using Simulator.UI;
 namespace Simulator
 {
     delegate void MenuIntroDisplayCallback();
-    //public class Menu<T, I> : Menu<T> where I : Menu<T>
-    //{
 
-    //}
     public class Menu<T> : IDisplayable
     {
+        public string Name { get; private set; }
         protected int? _selectedCommand { get; private set; } = null;
         public Exception? MenuException { get; private set; } = null;
         private MenuIntroDisplayCallback? _menuIntroDisplayCallback = null;
 
         private MenuList<T, MenuListItem<T>> _menuList;
-        internal Menu(MenuList<T, MenuListItem<T>> menuList)
+        internal Menu(string name, MenuList<T, MenuListItem<T>> menuList)
         {
+            Name = name;
             _menuList = menuList;
         }
-        internal Menu(MenuList<T, MenuListItem<T>> menuList, MenuIntroDisplayCallback introDisplayCallback)
+        internal Menu(string name, MenuList<T, MenuListItem<T>> menuList, MenuIntroDisplayCallback introDisplayCallback)
         {
+            Name = name;
             _menuList = menuList;
             _menuIntroDisplayCallback = introDisplayCallback;
         }
@@ -50,8 +50,8 @@ namespace Simulator
                     _selectedCommand = null;
                 }
             } while (_selectedCommand == null);
-        
-            ConsoleUI.WriteLine("\nPress any key to exit the simulator");
+
+            ConsoleUI.WriteLine($"\nPress any key to exit the {Name} menu");
             ConsoleUI.ReadKey(intercept: true);
         }
 
