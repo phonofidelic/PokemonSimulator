@@ -1,5 +1,4 @@
 ﻿// Ignore Spelling: Charmelion
-
 using UI;
 
 namespace PokemonSimulator.Library

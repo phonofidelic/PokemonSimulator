@@ -7,7 +7,6 @@ namespace PokemonSimulator.Library
         public string Name { get; }
         public ElementType Type { get; }
         public int BasePower { get; private set; }
-        // private Dictionary<ElementType, ConsoleColor> ElementColor = new();
         public ConsoleColor ElementColor { get; private init; }
 
         public Attack(string name, ElementType type, int basePower)

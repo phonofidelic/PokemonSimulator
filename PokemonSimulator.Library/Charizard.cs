@@ -1,5 +1,4 @@
 ﻿// Ignore Spelling: Charizard
-
 using UI;
 
 namespace PokemonSimulator.Library
@@ -9,7 +8,6 @@ namespace PokemonSimulator.Library
         public override Pokemon CurrentEvolution {  get; protected set; }
         private readonly FirePokemon? NextEvolution = null;
 
-        //public Charizard(List<Attack> initialAttacks)
         public Charizard(Pokemon previousStage)
             : base("Charizard", previousStage.Attacks)
         {
