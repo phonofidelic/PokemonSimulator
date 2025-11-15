@@ -80,6 +80,7 @@ namespace Simulator
 
                     if (SimulationException != null)
                     {
+                        ConsoleUI.WriteLine();
                         DisplayMenuException(SimulationException.Message);
                     }
                     SimulationException = null;
@@ -118,7 +119,6 @@ namespace Simulator
                     SimulationException = ex;
                     SelectedPokemon = null;
                 }
-
             } while (SelectedPokemon == null);
         }
 
@@ -229,7 +229,7 @@ namespace Simulator
             ConsoleUI.WriteError(menuExceptionMessage);
         }
 
-        private int GetMenuSelectionFromKeyPress<T>(List<T> list)
+        private static int GetMenuSelectionFromKeyPress<T>(List<T> list)
         {
             var keyInfo = ConsoleUI.ReadKey(intercept: true);
             if (keyInfo.Key == ConsoleKey.Escape)
@@ -239,10 +239,10 @@ namespace Simulator
             var isNumber = int.TryParse(keyPressed, out int key);
             if (!isNumber)
                 throw new Exception("Please use a number to make your selection");
-            int index = key;
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, list.Count);
+            int selection = key;
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count - 1);
 
-            return index;
+            return selection;
         }
     }
 }
