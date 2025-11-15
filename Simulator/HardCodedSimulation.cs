@@ -129,8 +129,8 @@ namespace Simulator
             do
             {
                 ConsoleUI.Clear();
-                ConsoleUI.WriteLine($"{pokemon.Name} is a level {pokemon.Level} {pokemon.Type} Pokemon.");
-                ConsoleUI.WriteLine($"What would you like to do with {pokemon.Name}?");
+                ConsoleUI.WriteLine($"{pokemon.CurrentEvolution.Name} is a level {pokemon.CurrentEvolution.Level} {pokemon.Type} Pokemon.");
+                ConsoleUI.WriteLine($"What would you like to do with {pokemon.CurrentEvolution.Name}?");
                 ConsoleUI.WriteLine("");
 
                 if (SimulationException != null)
@@ -175,7 +175,7 @@ namespace Simulator
                             break;
                         case 2:
                             ConsoleUI.Clear();
-                            pokemon.Evolve();
+                            pokemon.CurrentEvolution.Evolve();
                             //ConsoleUI.WriteLine($"\nPress any key to continue");
                             //ConsoleUI.ReadKey(intercept: true);
                             //SelectedMenuIndex = previousSelectedCommand;
@@ -213,7 +213,7 @@ namespace Simulator
 
         private static void DisplayAttackInfo(Pokemon pokemon)
         {
-            ConsoleUI.WriteLine($"{pokemon.Name} knows {pokemon.Attacks.Count} attacks:");
+            ConsoleUI.WriteLine($"{pokemon.CurrentEvolution.Name} knows {pokemon.Attacks.Count} attacks:");
             foreach (Attack attack in pokemon.Attacks)
             {
                 ConsoleUI.Write($"\n\t Level {attack.BasePower} ");
