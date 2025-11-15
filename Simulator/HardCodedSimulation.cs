@@ -41,14 +41,12 @@ namespace Simulator
                 razorLeaf,
             ];
 
-            
-
-            //var charmander = new Charmander(fireAttacks);
-
-            List<Pokemon> pokemonList = new();
-            pokemonList.Add(new Charmander(fireAttacks));
-            pokemonList.Add(new Squirtle(waterAttacks));
-            pokemonList.Add(new Bulbasaur(grassAttacks));
+            List<Pokemon> pokemonList =
+            [
+                new Charmander(fireAttacks),
+                new Squirtle(waterAttacks),
+                new Bulbasaur(grassAttacks),
+            ];
 
             PokemonList = pokemonList;
 
@@ -129,8 +127,13 @@ namespace Simulator
             do
             {
                 ConsoleUI.Clear();
-                ConsoleUI.WriteLine($"{pokemon.CurrentEvolution.Name} is a level {pokemon.CurrentEvolution.Level} {pokemon.Type} Pokemon.");
-                ConsoleUI.WriteLine($"What would you like to do with {pokemon.CurrentEvolution.Name}?");
+                ConsoleUI.Write($"{pokemon.CurrentEvolution.Name} is a level {pokemon.CurrentEvolution.Level} ");
+                // ToDo: Create Element class
+                // ConsoleUI.ForegroundColor = pokemon.Element.Color.
+                ConsoleUI.Write($"{pokemon.Type}");
+                ConsoleUI.Write($" Pokemon.");
+                
+                ConsoleUI.WriteLine($"\nWhat would you like to do with {pokemon.CurrentEvolution.Name}?");
                 ConsoleUI.WriteLine("");
 
                 if (SimulationException != null)
@@ -146,8 +149,6 @@ namespace Simulator
                     $"\t3. Select Attack",
                     $"\t4. Random Attack",
                 ];
-
-
 
                 foreach (var item in menu)
                 {
@@ -168,21 +169,14 @@ namespace Simulator
                         case 1:
                             ConsoleUI.Clear();
                             DisplayAttackInfo(pokemon);
-                            //ConsoleUI.WriteLine($"\nPress any key to continue");
-                            //ConsoleUI.ReadKey(intercept: true);
-                            //SelectedMenuIndex = previousSelectedCommand;
-                            ////DisplayPokemonList(PokemonList);
                             break;
                         case 2:
                             ConsoleUI.Clear();
                             pokemon.CurrentEvolution.Evolve();
-                            //ConsoleUI.WriteLine($"\nPress any key to continue");
-                            //ConsoleUI.ReadKey(intercept: true);
-                            //SelectedMenuIndex = previousSelectedCommand;
                             break;
                         case 3:
                             ConsoleUI.Clear();
-                            // Select Attack
+                            // ToDo: Select Attack
                             ConsoleUI.WriteLine("(Not implemented)");
                             break;
                         case 4:
@@ -199,16 +193,11 @@ namespace Simulator
                     SelectedMenuIndex = previousSelectedCommand;
                 }
                 catch (Exception ex)
-
                 {
                     SimulationException = ex;
                     SelectedMenuIndex = previousSelectedCommand;
                 }
-
-
             } while (SelectedMenuIndex == previousSelectedCommand);
-
-            //MenuSelectionIndex = GetSelectionIndexFromMenu(pokemonInfoMenu);
         }
 
         private static void DisplayAttackInfo(Pokemon pokemon)
