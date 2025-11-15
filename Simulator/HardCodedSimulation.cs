@@ -85,7 +85,7 @@ namespace Simulator
                     }
                     SimulationException = null;
 
-                    Console.WriteLine($"\n(Esc.) to exit the Simulator.");
+                    ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
                     // GetMenuSelectionFromKeyPress reads the Escape key as 0
                     int pokemonIndex = GetMenuSelectionFromKeyPress(pokemonMenu);
                     if (pokemonIndex == 0)
@@ -153,7 +153,7 @@ namespace Simulator
                 {
                     ConsoleUI.WriteLine(item);
                 }
-                Console.WriteLine($"\n(Esc.) to return to the Pokemon list.");
+                ConsoleUI.WriteInfo($"\n(Esc.) to return to the Pokemon list.");
 
                 try
                 {
@@ -194,7 +194,7 @@ namespace Simulator
                             SelectedMenuIndex = previousSelectedCommand;
                             throw new NotImplementedException();
                     }
-                    ConsoleUI.WriteLine($"\nPress any key to continue");
+                    ConsoleUI.WriteInfo($"\n\nPress any key to continue");
                     ConsoleUI.ReadKey(intercept: true);
                     SelectedMenuIndex = previousSelectedCommand;
                 }
