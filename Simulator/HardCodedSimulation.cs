@@ -80,18 +80,37 @@ namespace Simulator
 
                     if (SimulationException != null)
                     {
+                        ConsoleUI.WriteLine();
                         DisplayMenuException(SimulationException.Message);
                     }
                     SimulationException = null;
 
+                    ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
                     // GetMenuSelectionFromKeyPress reads the Escape key as 0
                     int pokemonIndex = GetMenuSelectionFromKeyPress(pokemonMenu);
                     if (pokemonIndex == 0)
                     {
-                        ConsoleUI.WriteLine("Exiting the program...");
-                        Environment.Exit(0);
+                        ConsoleUI.Clear();
+                        ConsoleUI.WriteLine("\n\tAre you sure you want to quit?");
+                        ConsoleUI.WriteLine("\n\t\tY (yes)\tN (no)");
+                        var answer = ConsoleUI.ReadKey(intercept: true).Key;
+                        while (answer != ConsoleKey.Y && answer != ConsoleKey.N)
+                        {
+                            ConsoleUI.Clear();
+                            ConsoleUI.WriteLine("\n\tAre you sure you want to quit?");
+                            ConsoleUI.WriteWarning("\n\t\tY (yes) to quit\n\n\t\tN (no) to Cancel");
+                            answer = ConsoleUI.ReadKey(intercept: true).Key;
+                        }
+
+                        if (answer == ConsoleKey.Y)
+                        {
+                            ConsoleUI.WriteLine("Exiting the program...");
+                            Environment.Exit(0);
+                        }
                     }
-                    SelectedPokemon = PokemonList[pokemonIndex - 1];
+
+                    if (pokemonIndex > 0)
+                        SelectedPokemon =  PokemonList[pokemonIndex - 1];
 
                     if (SelectedPokemon != null)
                         DisplayPokemonInfo(SelectedPokemon);
@@ -100,7 +119,6 @@ namespace Simulator
                     SimulationException = ex;
                     SelectedPokemon = null;
                 }
-
             } while (SelectedPokemon == null);
         }
 
@@ -124,7 +142,9 @@ namespace Simulator
                 List<string> menu = [
                     "", // Map Keys.Escape to 0 to return to the main menu
                     $"\t1. Show Attacks",
-                    $"\t2. Evolve"
+                    $"\t2. Evolve",
+                    $"\t3. Select Attack",
+                    $"\t4. Random Attack",
                 ];
 
 
@@ -133,6 +153,7 @@ namespace Simulator
                 {
                     ConsoleUI.WriteLine(item);
                 }
+                ConsoleUI.WriteInfo($"\n(Esc.) to return to the Pokemon list.");
 
                 try
                 {
@@ -145,22 +166,37 @@ namespace Simulator
                             DisplayPokemonList(PokemonList);
                             break;
                         case 1:
+                            ConsoleUI.Clear();
                             DisplayAttackInfo(pokemon);
-                            ConsoleUI.WriteLine($"\nPress any key to return to continue");
-                            ConsoleUI.ReadKey(intercept: true);
-                            SelectedMenuIndex = previousSelectedCommand;
-                            //DisplayPokemonList(PokemonList);
+                            //ConsoleUI.WriteLine($"\nPress any key to continue");
+                            //ConsoleUI.ReadKey(intercept: true);
+                            //SelectedMenuIndex = previousSelectedCommand;
+                            ////DisplayPokemonList(PokemonList);
                             break;
                         case 2:
+                            ConsoleUI.Clear();
                             pokemon.Evolve();
-                            ConsoleUI.WriteLine($"\nPress any key to return to continue");
-                            ConsoleUI.ReadKey(intercept: true);
-                            SelectedMenuIndex = previousSelectedCommand;
+                            //ConsoleUI.WriteLine($"\nPress any key to continue");
+                            //ConsoleUI.ReadKey(intercept: true);
+                            //SelectedMenuIndex = previousSelectedCommand;
+                            break;
+                        case 3:
+                            ConsoleUI.Clear();
+                            // Select Attack
+                            ConsoleUI.WriteLine("(Not implemented)");
+                            break;
+                        case 4:
+                            ConsoleUI.Clear();
+                            // Random Attack
+                            pokemon.RandomAttack();
                             break;
                         default:
                             SelectedMenuIndex = previousSelectedCommand;
                             throw new NotImplementedException();
                     }
+                    ConsoleUI.WriteInfo($"\n\nPress any key to continue");
+                    ConsoleUI.ReadKey(intercept: true);
+                    SelectedMenuIndex = previousSelectedCommand;
                 }
                 catch (Exception ex)
 
@@ -190,12 +226,10 @@ namespace Simulator
 
         private static void DisplayMenuException(string menuExceptionMessage)
         {
-            ConsoleUI.ForegroundColor = ConsoleColor.Red;
-            ConsoleUI.WriteLine(menuExceptionMessage);
-            ConsoleUI.ResetColor();
+            ConsoleUI.WriteError(menuExceptionMessage);
         }
 
-        private int GetMenuSelectionFromKeyPress<T>(List<T> list)
+        private static int GetMenuSelectionFromKeyPress<T>(List<T> list)
         {
             var keyInfo = ConsoleUI.ReadKey(intercept: true);
             if (keyInfo.Key == ConsoleKey.Escape)
@@ -205,10 +239,10 @@ namespace Simulator
             var isNumber = int.TryParse(keyPressed, out int key);
             if (!isNumber)
                 throw new Exception("Please use a number to make your selection");
-            int index = key;
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, list.Count);
+            int selection = key;
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count - 1);
 
-            return index;
+            return selection;
         }
     }
 }
