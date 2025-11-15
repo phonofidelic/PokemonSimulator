@@ -12,12 +12,8 @@ namespace PokemonSimulator.Library
         {
             CurrentEvolution = this;
         }
-        private class NextEvolution : Charmelion
-        {
-            public NextEvolution(Pokemon previousStage)
-                : base(previousStage)
-            { }
-        };
+        private class NextEvolution(Pokemon previousStage) 
+            : Charmelion(previousStage) {};
 
         protected override void _Evolve()
         {

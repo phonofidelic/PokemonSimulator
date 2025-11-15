@@ -6,7 +6,6 @@ namespace PokemonSimulator.Library
     internal class Charizard : FirePokemon, IEvolvable
     {
         public override Pokemon CurrentEvolution {  get; protected set; }
-        private readonly FirePokemon? NextEvolution = null;
 
         public Charizard(Pokemon previousStage)
             : base("Charizard", previousStage.Attacks)

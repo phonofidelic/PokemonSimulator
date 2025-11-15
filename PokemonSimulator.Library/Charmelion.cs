@@ -13,12 +13,8 @@ namespace PokemonSimulator.Library
             Level = previousStage.Level;
             CurrentEvolution = this;
         }
-        private class NextEvolution : Charizard
-        {
-            public NextEvolution(Pokemon previousStage)
-                : base(previousStage)
-            { }
-        };
+        private class NextEvolution(Pokemon previousStage) 
+            : Charizard(previousStage) {};
 
         protected override void _Evolve()
         {
