@@ -13,10 +13,5 @@ namespace PokemonSimulator.Library
             Level = previousStage.Level;
             CurrentEvolution = this;
         }
-
-        protected override void _Evolve()
-        {
-            ConsoleUI.WriteLine($"{Name} has reached its final stage of evolution!");
-        }
     }
 }
