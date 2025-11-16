@@ -10,7 +10,8 @@ namespace Simulator
         internal Pokemon? SelectedPokemon { get; private set; } = null;
         internal List<Pokemon> PokemonList { get; private set; } = [];
 
-        private List<Attack> AllAttacks = [
+        // Create individual attack instances that can be copied to new Pokemon instances
+        private readonly IEnumerable<Attack> AllAttacks = [
             new("Fire Fang", ElementType.Fire, 20),
             new("Heat Tackle", ElementType.Fire, 30),
             new("Ember", ElementType.Fire, 40),
@@ -22,22 +23,23 @@ namespace Simulator
             new("Razor Leaf", ElementType.Grass, 30),
         ];
 
+        private readonly Random _random = new();
+
         internal override void Start()
         {
-            List <Attack> fireAttacks = GenerateElementalAttacks(ElementType.Fire);
-            List <Attack> waterAttacks = GenerateElementalAttacks(ElementType.Water);
-            List <Attack> grassAttacks = GenerateElementalAttacks(ElementType.Grass);
-
             List<Pokemon> pokemonList =
             [
-                new Charmander(fireAttacks),
-                new Squirtle(waterAttacks),
-                new Bulbasaur(grassAttacks),
+                // Charmander gets 3 fire attacks
+                new Charmander(GenerateElementalAttacks(ElementType.Fire, 3)),
+                // Squirtle tries to get 6 water attacks, but only 2 are available
+                new Squirtle(GenerateElementalAttacks(ElementType.Water, 6)),
+                // Bulbasaur gets 3 random attacks
+                new Bulbasaur(GenerateRandomAttacks(3)),
             ];
 
-            List<WaterPokemon> watterPokemon = [
-                new Squirtle(waterAttacks),
-                //new Charmander(fireAttacks) // <- Cannot implicitly convert Charmander to WaterPokemon
+            List<WaterPokemon> waterPokemon = [
+                new Squirtle(GenerateRandomAttacks(3)),
+                //new Charmander(GenerateRandomAttacks(3)) // <- Cannot implicitly convert Charmander to WaterPokemon
             ];
 
             PokemonList = pokemonList;
@@ -45,12 +47,30 @@ namespace Simulator
             DisplayPokemonList(PokemonList);
         }
 
-        private List<Attack> GenerateElementalAttacks(ElementType elementType)
+        private List<Attack> GenerateRandomAttacks(int count)
+        {
+            // Create a copy of AllAttacks
+            List<Attack> attacks = [.. AllAttacks];
+            int randomIndex = _random.Next(attacks.Count);
+            List<Attack> result = [];
+
+            while (result.Count < count)
+            {
+                if (attacks.Count == 0) break;
+                var attack = attacks[randomIndex];
+                result.Add(attack);
+                attacks.Remove(attack);
+                randomIndex = _random.Next(attacks.Count);
+            }
+
+            return result;
+        }
+
+        private List<Attack> GenerateElementalAttacks(ElementType elementType, int count)
         {
             List<Attack> result = [];
-            var fireAttacksQuery = AllAttacks.Where(attack => (attack.Type == elementType));
-                //.Select(attack => attack)
-                //.ToList();
+            var fireAttacksQuery = AllAttacks.Where(attack => (attack.Type == elementType)).Take(count);
+
             foreach (var fireAttack in fireAttacksQuery)
             {
                 result.Add(fireAttack);
@@ -199,7 +219,7 @@ namespace Simulator
             } while (SelectedMenuIndex == previousSelectedCommand);
         }
 
-        private void SelectAttack(Pokemon pokemon)
+        private static void SelectAttack(Pokemon pokemon)
         {
             bool goBack = false;
             int selectedAttackMenuIndex;
