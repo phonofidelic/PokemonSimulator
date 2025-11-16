@@ -17,6 +17,7 @@ namespace UI
         public static void Write(string? input) => Console.Write(input);
         public static ConsoleKeyInfo ReadKey(bool intercept) => Console.ReadKey(intercept);
         public static ConsoleKeyInfo ReadKey() => Console.ReadKey();
+        public static string? ReadLine() => Console.ReadLine();
 
         public static void Clear() => Console.Clear();
 

@@ -1,4 +1,5 @@
 ﻿using PokemonSimulator.Library;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using UI;
 
@@ -114,7 +115,7 @@ namespace Simulator
 
                     // GetMenuSelectionFromKeyPress reads the Escape key as 0
                     ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
-                    SelectedMenuIndex = GetListSelectionFromKeyPress(mainMenu);
+                    SelectedMenuIndex = GetListSelectionFromReadKey(mainMenu);
                     int pokemonIndex;
                     
                     // ToDo: Improve menu selection...
@@ -183,7 +184,9 @@ namespace Simulator
 
         private void DisplaySelectGroupAttackMenu()
         {
-            
+            bool goBack = false;
+            Exception? localException = null;
+
             HashSet<Attack> uniqueAttacks = [];
             foreach (var pokemon in PokemonList)
             {
@@ -200,7 +203,7 @@ namespace Simulator
             do
             {
                 Console.Clear();
-                ConsoleUI.WriteLine("Which attack would you like you Pokemon to use?");
+                ConsoleUI.WriteLine("Which attack would you like your Pokemon to use?");
 
                 foreach ((var attack, int index) in uniqueAttacksList.Select((attack, index) => (attack, index)))
                 {
@@ -210,22 +213,63 @@ namespace Simulator
                     ConsoleUI.Write($" attack with {count} pokemon");
                 }
 
-                var selection = GetListSelectionFromKeyPress(uniqueAttacksList);
-                selectedAttack = uniqueAttacksList[selection];
-                var pokemonToAtatack = PokemonList
-                    .Where(pokemon => pokemon.Attacks.Contains(selectedAttack))
-                    .Select(pokemon => pokemon);
+                ConsoleUI.WriteLine();
 
-                foreach (var pokemon in pokemonToAtatack)
+                if (localException != null)
                 {
-                    var attackIndex = pokemon.Attacks.IndexOf(selectedAttack);
-                    pokemon.Attack(attackIndex - 1);
+                    DisplayMenuException($"\n{localException.Message}");
                 }
-            } while (selectedAttack == null);
-            
 
-            ConsoleUI.PromptForContinue();
+                try {
+                    int selectionIndex;
+                    /* If there are more than 9 unique attacks, 
+                     * we need to use ReadLine to get the input.
+                     */
+                    if (uniqueAttacksList.Count > 9)
+                    {
+                        ConsoleUI.WriteInfo("\n\nEnter an Attack from the list. (0) to go back");
+                        selectionIndex = GetListSelectionFromReadLine(uniqueAttacksList);
+                    } else
+                    {
+                        ConsoleUI.WriteInfo("\n\nSelect an Attack from the list. (Esc) to go back");
+                        selectionIndex = GetListSelectionFromReadKey(uniqueAttacksList);
+                    }
+
+                    if (selectionIndex == 0)
+                    {
+                        goBack = true;
+                        break;
+                    }
+
+                    selectedAttack = uniqueAttacksList[selectionIndex - 1];
+                    var pokemonToAtatack = PokemonList
+                        .Where(pokemon => pokemon.Attacks.Contains(selectedAttack))
+                        .Select(pokemon => pokemon);
+
+                    ConsoleUI.Clear();
+                    ConsoleUI.WriteLine("\n");
+                    foreach (var pokemon in pokemonToAtatack)
+                    {
+                        var attackIndex = pokemon.Attacks.IndexOf(selectedAttack);
+
+                        ConsoleUI.Write($"\n\t{pokemon.CurrentEvolution.Name} used ");
+                        pokemon.Attack(attackIndex);
+                        //ConsoleUI.Write("\n");
+                    }
+
+                    ConsoleUI.PromptForContinue();
+                } catch (Exception ex)
+                {
+                    localException = ex;
+                }
+                
+            
+            } while (!goBack);
+
+
         }
+
+        
 
         private void DisplayPokemonInfo(Pokemon pokemon)
         {
@@ -264,7 +308,7 @@ namespace Simulator
 
                 try
                 {
-                    SelectedMenuIndex = GetListSelectionFromKeyPress(menu);
+                    SelectedMenuIndex = GetListSelectionFromReadKey(menu);
 
                     switch (SelectedMenuIndex)
                     {
@@ -333,7 +377,7 @@ namespace Simulator
                         DisplayMenuException($"\n{localException.Message}"); 
                     }
                     
-                    selectedAttackMenuIndex = GetListSelectionFromKeyPress(pokemon.Attacks);
+                    selectedAttackMenuIndex = GetListSelectionFromReadKey(pokemon.Attacks);
                     
                     if (selectedAttackMenuIndex == 0)
                     {
@@ -387,7 +431,7 @@ namespace Simulator
             ConsoleUI.WriteError(menuExceptionMessage);
         }
 
-        private static int GetListSelectionFromKeyPress<T>(List<T> list)
+        private static int GetListSelectionFromReadKey<T>(List<T> list)
         {
             var keyInfo = ConsoleUI.ReadKey(intercept: true);
             if (keyInfo.Key == ConsoleKey.Escape)
@@ -398,6 +442,19 @@ namespace Simulator
             if (!isNumber)
                 throw new Exception("Please use a number to make your selection");
             int selection = key;
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count);
+
+            return selection;
+        }
+
+        private int GetListSelectionFromReadLine<T>(List<T> list)
+        {
+
+            var rawInput = ConsoleUI.ReadLine();
+            var isNumber = int.TryParse(rawInput, out int index);
+            if (!isNumber)
+                throw new Exception("Please use a number to make your selection");
+            int selection = index;
             ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count);
 
             return selection;
