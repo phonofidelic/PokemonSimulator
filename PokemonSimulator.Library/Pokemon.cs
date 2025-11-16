@@ -7,7 +7,7 @@ namespace PokemonSimulator.Library
         public virtual Pokemon CurrentEvolution { get; protected set; }
         public virtual string Name { get; protected set; }
         public int Level { get; protected set; } = 1;
-        public ElementType Type { get; private set; }
+        public ElementType Type { get; private init; }
 
         public List<Attack> Attacks { get; protected set; }
 

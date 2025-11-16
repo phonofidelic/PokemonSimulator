@@ -10,36 +10,23 @@ namespace Simulator
         internal Pokemon? SelectedPokemon { get; private set; } = null;
         internal List<Pokemon> PokemonList { get; private set; } = [];
 
+        private List<Attack> AllAttacks = [
+            new("Fire Fang", ElementType.Fire, 20),
+            new("Heat Tackle", ElementType.Fire, 30),
+            new("Ember", ElementType.Fire, 40),
+            new("Water Gun", ElementType.Water, 20),
+            new("Bubble", ElementType.Water, 20),
+            new("Vine Whip", ElementType.Grass, 50),
+            new("Bind Down", ElementType.Grass, 10),
+            new("Leech Seed", ElementType.Grass, 20),
+            new("Razor Leaf", ElementType.Grass, 30),
+        ];
+
         internal override void Start()
         {
-            Attack fireFang = new("Fire Fang", ElementType.Fire, 20);
-            Attack heatTackle = new("Heat Tackle", ElementType.Fire, 30);
-            Attack ember = new("Ember", ElementType.Fire, 40);
-            Attack waterGun = new("Water Gun", ElementType.Water, 20);
-            Attack bubble = new("Bubble", ElementType.Water, 20);
-            Attack vineWhip = new("Vine Whip", ElementType.Grass, 50);
-            Attack bindDown = new("Bind Down", ElementType.Grass, 10);
-            Attack leechSeed= new("Leech Seed", ElementType.Grass, 20);
-            Attack razorLeaf= new("Razor Leaf", ElementType.Grass, 30);
-
-            List<Attack> fireAttacks = [
-                fireFang,
-                heatTackle,
-                ember,
-                //waterGun, //<- Should throw type error when added to Charmander?
-                //vineWhip, //<- Should throw type error when added to Charmander?
-            ];
-            List<Attack> waterAttacks = [
-                waterGun,
-                bubble,
-            ];
-
-            List<Attack> grassAttacks = [
-                vineWhip,
-                bindDown,
-                leechSeed,
-                razorLeaf,
-            ];
+            List <Attack> fireAttacks = GenerateElementalAttacks(ElementType.Fire);
+            List <Attack> waterAttacks = GenerateElementalAttacks(ElementType.Water);
+            List <Attack> grassAttacks = GenerateElementalAttacks(ElementType.Grass);
 
             List<Pokemon> pokemonList =
             [
@@ -48,9 +35,28 @@ namespace Simulator
                 new Bulbasaur(grassAttacks),
             ];
 
+            List<WaterPokemon> watterPokemon = [
+                new Squirtle(waterAttacks),
+                //new Charmander(fireAttacks) // <- Cannot implicitly convert Charmander to WaterPokemon
+            ];
+
             PokemonList = pokemonList;
 
             DisplayPokemonList(PokemonList);
+        }
+
+        private List<Attack> GenerateElementalAttacks(ElementType elementType)
+        {
+            List<Attack> result = [];
+            var fireAttacksQuery = AllAttacks.Where(attack => (attack.Type == elementType));
+                //.Select(attack => attack)
+                //.ToList();
+            foreach (var fireAttack in fireAttacksQuery)
+            {
+                result.Add(fireAttack);
+            }
+
+            return result;
         }
 
         private void DisplayPokemonList(List<Pokemon> pokemonList)
