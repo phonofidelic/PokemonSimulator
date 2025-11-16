@@ -3,7 +3,7 @@ using UI;
 
 namespace Simulator
 {
-    internal class HardCodedSimulation : Simulation
+    internal class ExampleSimulation : Simulation
     {
         internal Exception? SimulationException { get; private set; } = null;
         internal int? SelectedMenuIndex { get; private set; }

@@ -6,7 +6,7 @@
         {
             //DynamicSimulation simulation = new();
             //simulation.Start();
-            HardCodedSimulation hardCodedSimulation = new();
+            ExampleSimulation hardCodedSimulation = new();
             hardCodedSimulation.Start();
         }
     }
