@@ -59,21 +59,13 @@ namespace Simulator
             {
                 ConsoleUI.Clear();
                 ConsoleUI.WriteLine("Welcome to the Pokemon Simulator!");
-                ConsoleUI.WriteLine($"\nYou have {pokemonList.Count} Pokemon:");
+                ConsoleUI.WriteLine($"\nYou have {pokemonList.Count} Pokemon:\n");
                 try
                 {
-                    // Reserve the first menu position for the Exit command
-                    List<string> pokemonMenu = [String.Empty];
-
                     for (var i = 0; i < pokemonList.Count; i++)
                     {
                         var pokemon = pokemonList[i];
-                        pokemonMenu.Add($"\t{i + 1}. {pokemon}");
-                    }
-
-                    foreach(var item in pokemonMenu)
-                    {
-                        ConsoleUI.WriteLine(item);
+                        ConsoleUI.WriteLine($"\t{i + 1}. {pokemon}");
                     }
 
                     if (SimulationException != null)
@@ -83,9 +75,9 @@ namespace Simulator
                     }
                     SimulationException = null;
 
-                    ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
                     // GetMenuSelectionFromKeyPress reads the Escape key as 0
-                    int pokemonIndex = GetMenuSelectionFromKeyPress(pokemonMenu);
+                    ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
+                    int pokemonIndex = GetListSelectionFromKeyPress(pokemonList);
                     if (pokemonIndex == 0)
                     {
                         ConsoleUI.Clear();
@@ -143,7 +135,6 @@ namespace Simulator
                 SimulationException = null;
 
                 List<string> menu = [
-                    "", // Map Keys.Escape to 0 to return to the main menu
                     $"\t1. Show Attacks",
                     $"\t2. Evolve",
                     $"\t3. Select Attack",
@@ -158,7 +149,7 @@ namespace Simulator
 
                 try
                 {
-                    SelectedMenuIndex = GetMenuSelectionFromKeyPress(menu);
+                    SelectedMenuIndex = GetListSelectionFromKeyPress(menu);
 
                     switch (SelectedMenuIndex)
                     {
@@ -168,20 +159,22 @@ namespace Simulator
                             break;
                         case 1:
                             ConsoleUI.Clear();
-                            DisplayAttackInfo(pokemon);
+                            DisplayAttacks(pokemon);
                             break;
                         case 2:
                             ConsoleUI.Clear();
                             pokemon.CurrentEvolution.Evolve();
                             break;
                         case 3:
+                            // Select Attack
                             ConsoleUI.Clear();
-                            // ToDo: Select Attack
-                            ConsoleUI.WriteLine("(Not implemented)");
+                            SelectAttack(pokemon);
+                            DisplayPokemonInfo(pokemon);
                             break;
                         case 4:
-                            ConsoleUI.Clear();
                             // Random Attack
+                            ConsoleUI.Clear();
+                            ConsoleUI.WriteLine("\n\n");
                             pokemon.RandomAttack();
                             break;
                         default:
@@ -200,17 +193,72 @@ namespace Simulator
             } while (SelectedMenuIndex == previousSelectedCommand);
         }
 
-        private static void DisplayAttackInfo(Pokemon pokemon)
+        private void SelectAttack(Pokemon pokemon)
+        {
+            bool goBack = false;
+            int selectedAttackMenuIndex;
+            Exception? localException = null;
+
+            do
+            {
+                try {
+                    ConsoleUI.Clear();
+                    Console.WriteLine($"Which attack would you like {pokemon.CurrentEvolution.Name} to use?\n\n");
+                    for (int i = 0; i < pokemon.Attacks.Count; i++)
+                    {
+                        Attack attack = pokemon.Attacks[i];
+                        Console.Write($"\n\t{i + 1}. ");
+                        DisplayAttackInfo(attack);
+                    }
+                    ConsoleUI.WriteInfo("\n\nSelect an Attack from the list. (Esc) to go back");
+                    
+                    if (localException != null)
+                    {
+                        DisplayMenuException($"\n{localException.Message}"); 
+                    }
+                    
+                    selectedAttackMenuIndex = GetListSelectionFromKeyPress(pokemon.Attacks);
+                    
+                    if (selectedAttackMenuIndex == 0)
+                    {
+                        goBack = true;
+                        break;
+                    }
+                    
+                    if (selectedAttackMenuIndex > 0)
+                    {
+                        ConsoleUI.Clear();
+                        ConsoleUI.WriteLine("\n\n");
+                        pokemon.Attack(selectedAttackMenuIndex - 1);
+                    }
+
+                    localException = null;
+                    ConsoleUI.WriteInfo($"\n\n\tPress any key to continue");
+                    ConsoleUI.ReadKey(intercept: true);
+                } catch (Exception ex)
+                {
+                    localException = ex;
+                }
+            } while (!goBack);
+        }
+
+        private static void DisplayAttacks(Pokemon pokemon)
         {
             ConsoleUI.WriteLine($"{pokemon.CurrentEvolution.Name} knows {pokemon.Attacks.Count} attacks:");
-            foreach (Attack attack in pokemon.Attacks)
+            foreach ((Attack attack, int index) in pokemon.Attacks.Select((Attack, index) => (Attack, index)))
             {
-                ConsoleUI.Write($"\n\t Level {attack.BasePower} ");
-                ConsoleUI.ForegroundColor = attack.ElementColor;
-                ConsoleUI.Write($"{attack}");
-                ConsoleUI.ResetColor();
-                ConsoleUI.Write(" attack.");
+                Console.Write("\n\t");
+                DisplayAttackInfo(attack);
             }
+        }
+
+        private static void DisplayAttackInfo(Attack attack)
+        {
+            ConsoleUI.Write($"Level {attack.BasePower} ");
+            ConsoleUI.ForegroundColor = attack.ElementColor;
+            ConsoleUI.Write($"{attack}");
+            ConsoleUI.ResetColor();
+            ConsoleUI.Write(" attack.");
         }
 
         private static void DisplayMenuException(string menuExceptionMessage)
@@ -218,7 +266,7 @@ namespace Simulator
             ConsoleUI.WriteError(menuExceptionMessage);
         }
 
-        private static int GetMenuSelectionFromKeyPress<T>(List<T> list)
+        private static int GetListSelectionFromKeyPress<T>(List<T> list)
         {
             var keyInfo = ConsoleUI.ReadKey(intercept: true);
             if (keyInfo.Key == ConsoleKey.Escape)
@@ -229,7 +277,7 @@ namespace Simulator
             if (!isNumber)
                 throw new Exception("Please use a number to make your selection");
             int selection = key;
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count - 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count);
 
             return selection;
         }
