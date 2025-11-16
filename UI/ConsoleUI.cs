@@ -42,10 +42,16 @@ namespace UI
             ConsoleUI.ResetColor();
         }
 
+        public static void PromptForContinue()
+        {
+            WriteInfo("\n\nPress any key to continue");
+            ReadKey(intercept: true);
+        }
+
         public static void Debug(string message)
         {
             ConsoleUI.ForegroundColor = ConsoleColor.Cyan;
-            ConsoleUI.WriteLine(message);
+            ConsoleUI.WriteLine($"[DEBUG] {message}");
             ConsoleUI.ResetColor();
         }
     }
