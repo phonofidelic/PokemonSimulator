@@ -35,6 +35,8 @@ namespace Simulator
                 new Squirtle(GenerateElementalAttacks(ElementType.Water, 6)),
                 // Bulbasaur gets 3 random attacks
                 new Bulbasaur(GenerateRandomAttacks(3)),
+                // Another Charmander with 5 random attacks
+                new Charmander(GenerateRandomAttacks(5)),
             ];
 
             List<WaterPokemon> waterPokemon = [
@@ -233,8 +235,7 @@ namespace Simulator
                             SelectedMenuIndex = previousSelectedCommand;
                             throw new NotImplementedException();
                     }
-                    ConsoleUI.WriteInfo($"\n\nPress any key to continue");
-                    ConsoleUI.ReadKey(intercept: true);
+                    ConsoleUI.PromptForContinue();
                     SelectedMenuIndex = previousSelectedCommand;
                 }
                 catch (Exception ex)
@@ -255,7 +256,7 @@ namespace Simulator
             {
                 try {
                     ConsoleUI.Clear();
-                    Console.WriteLine($"Which attack would you like {pokemon.CurrentEvolution.Name} to use?\n\n");
+                    Console.WriteLine($"Which attack would you like {pokemon.CurrentEvolution.Name} to use?");
                     for (int i = 0; i < pokemon.Attacks.Count; i++)
                     {
                         Attack attack = pokemon.Attacks[i];
@@ -280,7 +281,7 @@ namespace Simulator
                     if (selectedAttackMenuIndex > 0)
                     {
                         ConsoleUI.Clear();
-                        ConsoleUI.WriteLine("\n\n");
+                        ConsoleUI.WriteLine("\n");
                         ConsoleUI.Write($"\n\t{pokemon.CurrentEvolution.Name} used ");
                         pokemon.Attack(selectedAttackMenuIndex - 1);
                     }
