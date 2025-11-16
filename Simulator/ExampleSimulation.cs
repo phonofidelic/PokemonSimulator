@@ -262,14 +262,8 @@ namespace Simulator
                 {
                     localException = ex;
                 }
-                
-            
             } while (!goBack);
-
-
         }
-
-        
 
         private void DisplayPokemonInfo(Pokemon pokemon)
         {
@@ -437,27 +431,28 @@ namespace Simulator
             if (keyInfo.Key == ConsoleKey.Escape)
                 return 0;
                 
-            var keyPressed = keyInfo.KeyChar.ToString();
-            var isNumber = int.TryParse(keyPressed, out int key);
-            if (!isNumber)
-                throw new Exception("Please use a number to make your selection");
-            int selection = key;
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count);
+            var rawInput = keyInfo.KeyChar.ToString();
+            int index = TryParsSelectionIndex(list, rawInput);
 
-            return selection;
+            return index;
         }
 
-        private int GetListSelectionFromReadLine<T>(List<T> list)
+        private static int GetListSelectionFromReadLine<T>(List<T> list)
         {
-
             var rawInput = ConsoleUI.ReadLine();
+            int index = TryParsSelectionIndex(list, rawInput);
+
+            return index;
+        }
+
+        private static int TryParsSelectionIndex<T>(List<T> list, string? rawInput)
+        {
             var isNumber = int.TryParse(rawInput, out int index);
             if (!isNumber)
                 throw new Exception("Please use a number to make your selection");
-            int selection = index;
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, list.Count);
 
-            return selection;
+            return index;
         }
     }
 }
