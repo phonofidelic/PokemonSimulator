@@ -88,10 +88,17 @@ namespace Simulator
                 ConsoleUI.WriteLine($"\nYou have {pokemonList.Count} Pokemon:\n");
                 try
                 {
+                    List<string> mainMenu = [];
                     for (var i = 0; i < pokemonList.Count; i++)
                     {
                         var pokemon = pokemonList[i];
-                        ConsoleUI.WriteLine($"\t{i + 1}. {pokemon}");
+                        mainMenu.Add($"\t{i + 1}. {pokemon}");
+                    }
+                    mainMenu.Add($"\n\t{pokemonList.Count + 1}. Attack with all Pokemon");
+
+                    foreach(var item in mainMenu)
+                    {
+                        ConsoleUI.WriteLine(item);
                     }
 
                     if (SimulationException != null)
@@ -103,8 +110,22 @@ namespace Simulator
 
                     // GetMenuSelectionFromKeyPress reads the Escape key as 0
                     ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
-                    int pokemonIndex = GetListSelectionFromKeyPress(pokemonList);
-                    if (pokemonIndex == 0)
+                    SelectedMenuIndex = GetListSelectionFromKeyPress(mainMenu);
+                    int pokemonIndex;
+                    ConsoleUI.Debug($"SelectedMenuIndex: {SelectedMenuIndex}");
+                    if(SelectedMenuIndex == mainMenu.Count)
+                    {
+                        Console.Clear();
+                        ConsoleUI.WriteLine("ATTAAAAACK!!!\n\n");
+                        foreach(var pokemon in PokemonList)
+                        {
+                            ConsoleUI.Write($"\n\t{pokemon.CurrentEvolution.Name} used ");
+                            pokemon.RandomAttack();
+                            ConsoleUI.WriteLine();
+                        }
+                        ConsoleUI.PromptForContinue();
+                    }
+                    if (SelectedMenuIndex == 0)
                     {
                         ConsoleUI.Clear();
                         ConsoleUI.WriteLine("\n\tAre you sure you want to quit?");
@@ -125,17 +146,21 @@ namespace Simulator
                         }
                     }
 
-                    if (pokemonIndex > 0)
+                    pokemonIndex = (int)SelectedMenuIndex;
+                    if (pokemonIndex> 0 && pokemonIndex <= PokemonList.Count)
                         SelectedPokemon =  PokemonList[pokemonIndex - 1];
 
                     if (SelectedPokemon != null)
                         DisplayPokemonInfo(SelectedPokemon);
+
+                    SelectedMenuIndex = null;
                 }
                 catch (Exception ex) {
                     SimulationException = ex;
                     SelectedPokemon = null;
+                    SelectedMenuIndex = null;
                 }
-            } while (SelectedPokemon == null);
+            } while (SelectedMenuIndex == null);
         }
 
         private void DisplayPokemonInfo(Pokemon pokemon)
@@ -201,6 +226,7 @@ namespace Simulator
                             // Random Attack
                             ConsoleUI.Clear();
                             ConsoleUI.WriteLine("\n\n");
+                            ConsoleUI.Write($"\n\t{pokemon.CurrentEvolution.Name} used ");
                             pokemon.RandomAttack();
                             break;
                         default:
@@ -255,12 +281,12 @@ namespace Simulator
                     {
                         ConsoleUI.Clear();
                         ConsoleUI.WriteLine("\n\n");
+                        ConsoleUI.Write($"\n\t{pokemon.CurrentEvolution.Name} used ");
                         pokemon.Attack(selectedAttackMenuIndex - 1);
                     }
 
                     localException = null;
-                    ConsoleUI.WriteInfo($"\n\n\tPress any key to continue");
-                    ConsoleUI.ReadKey(intercept: true);
+                    ConsoleUI.PromptForContinue();
                 } catch (Exception ex)
                 {
                     localException = ex;

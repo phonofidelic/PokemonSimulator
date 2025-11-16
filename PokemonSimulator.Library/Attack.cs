@@ -26,9 +26,9 @@ namespace PokemonSimulator.Library
         };
         public void Use(int level) {
             ConsoleUI.ForegroundColor = ElementColor;
-            ConsoleUI.Write($"\t{Name}");
+            ConsoleUI.Write($"{Name}");
             ConsoleUI.ResetColor();
-            ConsoleUI.Write($" hit with a total power of {BasePower + level}!");
+            ConsoleUI.Write($" with a total power of {BasePower + level}!");
         }
 
         public override string ToString() => Name;
