@@ -25,7 +25,10 @@ namespace PokemonSimulator.Library
             _ => throw new ArgumentOutOfRangeException(nameof(Type), $"{Type} is not a valid Element"),
         };
         public void Use(int level) {
-            ConsoleUI.WriteLine($"{Name} hit with a total power of {BasePower + level}");
+            ConsoleUI.ForegroundColor = ElementColor;
+            ConsoleUI.Write($"\t{Name}");
+            ConsoleUI.ResetColor();
+            ConsoleUI.Write($" hit with a total power of {BasePower + level}!");
         }
 
         public override string ToString() => Name;

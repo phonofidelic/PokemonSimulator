@@ -3,54 +3,80 @@ using UI;
 
 namespace Simulator
 {
-    internal class HardCodedSimulation : Simulation
+    internal class ExampleSimulation : Simulation
     {
         internal Exception? SimulationException { get; private set; } = null;
         internal int? SelectedMenuIndex { get; private set; }
         internal Pokemon? SelectedPokemon { get; private set; } = null;
         internal List<Pokemon> PokemonList { get; private set; } = [];
 
+        // Create individual attack instances that can be copied to new Pokemon instances
+        private readonly IEnumerable<Attack> AllAttacks = [
+            new("Fire Fang", ElementType.Fire, 20),
+            new("Heat Tackle", ElementType.Fire, 30),
+            new("Ember", ElementType.Fire, 40),
+            new("Water Gun", ElementType.Water, 20),
+            new("Bubble", ElementType.Water, 20),
+            new("Vine Whip", ElementType.Grass, 50),
+            new("Bind Down", ElementType.Grass, 10),
+            new("Leech Seed", ElementType.Grass, 20),
+            new("Razor Leaf", ElementType.Grass, 30),
+        ];
+
+        private readonly Random _random = new();
+
         internal override void Start()
         {
-            Attack fireFang = new("Fire Fang", ElementType.Fire, 20);
-            Attack heatTackle = new("Heat Tackle", ElementType.Fire, 30);
-            Attack ember = new("Ember", ElementType.Fire, 40);
-            Attack waterGun = new("Water Gun", ElementType.Water, 20);
-            Attack bubble = new("Bubble", ElementType.Water, 20);
-            Attack vineWhip = new("Vine Whip", ElementType.Grass, 50);
-            Attack bindDown = new("Bind Down", ElementType.Grass, 10);
-            Attack leechSeed= new("Leech Seed", ElementType.Grass, 20);
-            Attack razorLeaf= new("Razor Leaf", ElementType.Grass, 30);
-
-            List<Attack> fireAttacks = [
-                fireFang,
-                heatTackle,
-                ember,
-                //waterGun, //<- Should throw type error when added to Charmander?
-                //vineWhip, //<- Should throw type error when added to Charmander?
-            ];
-            List<Attack> waterAttacks = [
-                waterGun,
-                bubble,
-            ];
-
-            List<Attack> grassAttacks = [
-                vineWhip,
-                bindDown,
-                leechSeed,
-                razorLeaf,
-            ];
-
             List<Pokemon> pokemonList =
             [
-                new Charmander(fireAttacks),
-                new Squirtle(waterAttacks),
-                new Bulbasaur(grassAttacks),
+                // Charmander gets 3 fire attacks
+                new Charmander(GenerateElementalAttacks(ElementType.Fire, 3)),
+                // Squirtle tries to get 6 water attacks, but only 2 are available
+                new Squirtle(GenerateElementalAttacks(ElementType.Water, 6)),
+                // Bulbasaur gets 3 random attacks
+                new Bulbasaur(GenerateRandomAttacks(3)),
+            ];
+
+            List<WaterPokemon> waterPokemon = [
+                new Squirtle(GenerateRandomAttacks(3)),
+                //new Charmander(GenerateRandomAttacks(3)) // <- Cannot implicitly convert Charmander to WaterPokemon
             ];
 
             PokemonList = pokemonList;
 
             DisplayPokemonList(PokemonList);
+        }
+
+        private List<Attack> GenerateRandomAttacks(int count)
+        {
+            // Create a copy of AllAttacks
+            List<Attack> attacks = [.. AllAttacks];
+            int randomIndex = _random.Next(attacks.Count);
+            List<Attack> result = [];
+
+            while (result.Count < count)
+            {
+                if (attacks.Count == 0) break;
+                var attack = attacks[randomIndex];
+                result.Add(attack);
+                attacks.Remove(attack);
+                randomIndex = _random.Next(attacks.Count);
+            }
+
+            return result;
+        }
+
+        private List<Attack> GenerateElementalAttacks(ElementType elementType, int count)
+        {
+            List<Attack> result = [];
+            var fireAttacksQuery = AllAttacks.Where(attack => (attack.Type == elementType)).Take(count);
+
+            foreach (var fireAttack in fireAttacksQuery)
+            {
+                result.Add(fireAttack);
+            }
+
+            return result;
         }
 
         private void DisplayPokemonList(List<Pokemon> pokemonList)
@@ -59,21 +85,13 @@ namespace Simulator
             {
                 ConsoleUI.Clear();
                 ConsoleUI.WriteLine("Welcome to the Pokemon Simulator!");
-                ConsoleUI.WriteLine($"\nYou have {pokemonList.Count} Pokemon:");
+                ConsoleUI.WriteLine($"\nYou have {pokemonList.Count} Pokemon:\n");
                 try
                 {
-                    // Reserve the first menu position for the Exit command
-                    List<string> pokemonMenu = [String.Empty];
-
                     for (var i = 0; i < pokemonList.Count; i++)
                     {
                         var pokemon = pokemonList[i];
-                        pokemonMenu.Add($"\t{i + 1}. {pokemon}");
-                    }
-
-                    foreach(var item in pokemonMenu)
-                    {
-                        ConsoleUI.WriteLine(item);
+                        ConsoleUI.WriteLine($"\t{i + 1}. {pokemon}");
                     }
 
                     if (SimulationException != null)
@@ -83,9 +101,9 @@ namespace Simulator
                     }
                     SimulationException = null;
 
-                    ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
                     // GetMenuSelectionFromKeyPress reads the Escape key as 0
-                    int pokemonIndex = GetMenuSelectionFromKeyPress(pokemonMenu);
+                    ConsoleUI.WriteInfo($"\n(Esc.) to exit the Simulator.");
+                    int pokemonIndex = GetListSelectionFromKeyPress(pokemonList);
                     if (pokemonIndex == 0)
                     {
                         ConsoleUI.Clear();
@@ -143,7 +161,6 @@ namespace Simulator
                 SimulationException = null;
 
                 List<string> menu = [
-                    "", // Map Keys.Escape to 0 to return to the main menu
                     $"\t1. Show Attacks",
                     $"\t2. Evolve",
                     $"\t3. Select Attack",
@@ -158,7 +175,7 @@ namespace Simulator
 
                 try
                 {
-                    SelectedMenuIndex = GetMenuSelectionFromKeyPress(menu);
+                    SelectedMenuIndex = GetListSelectionFromKeyPress(menu);
 
                     switch (SelectedMenuIndex)
                     {
@@ -168,20 +185,22 @@ namespace Simulator
                             break;
                         case 1:
                             ConsoleUI.Clear();
-                            DisplayAttackInfo(pokemon);
+                            DisplayAttacks(pokemon);
                             break;
                         case 2:
                             ConsoleUI.Clear();
                             pokemon.CurrentEvolution.Evolve();
                             break;
                         case 3:
+                            // Select Attack
                             ConsoleUI.Clear();
-                            // ToDo: Select Attack
-                            ConsoleUI.WriteLine("(Not implemented)");
+                            SelectAttack(pokemon);
+                            DisplayPokemonInfo(pokemon);
                             break;
                         case 4:
-                            ConsoleUI.Clear();
                             // Random Attack
+                            ConsoleUI.Clear();
+                            ConsoleUI.WriteLine("\n\n");
                             pokemon.RandomAttack();
                             break;
                         default:
@@ -200,17 +219,72 @@ namespace Simulator
             } while (SelectedMenuIndex == previousSelectedCommand);
         }
 
-        private static void DisplayAttackInfo(Pokemon pokemon)
+        private static void SelectAttack(Pokemon pokemon)
+        {
+            bool goBack = false;
+            int selectedAttackMenuIndex;
+            Exception? localException = null;
+
+            do
+            {
+                try {
+                    ConsoleUI.Clear();
+                    Console.WriteLine($"Which attack would you like {pokemon.CurrentEvolution.Name} to use?\n\n");
+                    for (int i = 0; i < pokemon.Attacks.Count; i++)
+                    {
+                        Attack attack = pokemon.Attacks[i];
+                        Console.Write($"\n\t{i + 1}. ");
+                        DisplayAttackInfo(attack);
+                    }
+                    ConsoleUI.WriteInfo("\n\nSelect an Attack from the list. (Esc) to go back");
+                    
+                    if (localException != null)
+                    {
+                        DisplayMenuException($"\n{localException.Message}"); 
+                    }
+                    
+                    selectedAttackMenuIndex = GetListSelectionFromKeyPress(pokemon.Attacks);
+                    
+                    if (selectedAttackMenuIndex == 0)
+                    {
+                        goBack = true;
+                        break;
+                    }
+                    
+                    if (selectedAttackMenuIndex > 0)
+                    {
+                        ConsoleUI.Clear();
+                        ConsoleUI.WriteLine("\n\n");
+                        pokemon.Attack(selectedAttackMenuIndex - 1);
+                    }
+
+                    localException = null;
+                    ConsoleUI.WriteInfo($"\n\n\tPress any key to continue");
+                    ConsoleUI.ReadKey(intercept: true);
+                } catch (Exception ex)
+                {
+                    localException = ex;
+                }
+            } while (!goBack);
+        }
+
+        private static void DisplayAttacks(Pokemon pokemon)
         {
             ConsoleUI.WriteLine($"{pokemon.CurrentEvolution.Name} knows {pokemon.Attacks.Count} attacks:");
-            foreach (Attack attack in pokemon.Attacks)
+            foreach ((Attack attack, int index) in pokemon.Attacks.Select((Attack, index) => (Attack, index)))
             {
-                ConsoleUI.Write($"\n\t Level {attack.BasePower} ");
-                ConsoleUI.ForegroundColor = attack.ElementColor;
-                ConsoleUI.Write($"{attack}");
-                ConsoleUI.ResetColor();
-                ConsoleUI.Write(" attack.");
+                Console.Write("\n\t");
+                DisplayAttackInfo(attack);
             }
+        }
+
+        private static void DisplayAttackInfo(Attack attack)
+        {
+            ConsoleUI.Write($"Level {attack.BasePower} ");
+            ConsoleUI.ForegroundColor = attack.ElementColor;
+            ConsoleUI.Write($"{attack}");
+            ConsoleUI.ResetColor();
+            ConsoleUI.Write(" attack.");
         }
 
         private static void DisplayMenuException(string menuExceptionMessage)
@@ -218,7 +292,7 @@ namespace Simulator
             ConsoleUI.WriteError(menuExceptionMessage);
         }
 
-        private static int GetMenuSelectionFromKeyPress<T>(List<T> list)
+        private static int GetListSelectionFromKeyPress<T>(List<T> list)
         {
             var keyInfo = ConsoleUI.ReadKey(intercept: true);
             if (keyInfo.Key == ConsoleKey.Escape)
@@ -229,7 +303,7 @@ namespace Simulator
             if (!isNumber)
                 throw new Exception("Please use a number to make your selection");
             int selection = key;
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count - 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(selection, list.Count);
 
             return selection;
         }
