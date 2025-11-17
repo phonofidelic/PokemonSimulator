@@ -55,7 +55,13 @@ namespace Simulator
             ];
 
             // Get a list of Charmanders
-            var charmanderList = pokemonList.Where(pokemon => pokemon is Charmander).ToList();
+            List<Charmander> charmanderList = [];
+            foreach (var charmander in pokemonList.Where(pokemon => pokemon is Charmander).ToList())
+            {
+                // Use pattern matching to check if it is a Charmander
+                if (charmander is Charmander checkedCharmander)
+                    charmanderList.Add(checkedCharmander);
+            }
             ConsoleUI.WriteLine("charmanderList:");
             foreach (var charmander in charmanderList) {
                 ConsoleUI.Write($"Is {charmander} a Charmander? "); 
@@ -77,9 +83,9 @@ namespace Simulator
                 ConsoleUI.ResetColor();
             }
 
-            ConsoleUI.Write($"Is {singleCharmelion}.CurrentEvolution still a Charmander? ");
+            ConsoleUI.Write($"\nIs {singleCharmelion}.CurrentEvolution still a Charmander? ");
             ConsoleUI.ForegroundColor = ConsoleColor.Green;
-            ConsoleUI.Write($"{singleCharmander.CurrentEvolution is Charmander}\n"); // True
+            ConsoleUI.Write($"{singleCharmander.CurrentEvolution is Charmander} "); // True
             ConsoleUI.ResetColor();
 
             ConsoleUI.Write($"\nIs {singleCharmelion}.CurrentEvolution still a Charmander? ");
