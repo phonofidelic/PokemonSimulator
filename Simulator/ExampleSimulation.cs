@@ -337,9 +337,10 @@ namespace Simulator
 
                 List<string> menu = [
                     $"\t1. Show Attacks",
-                    $"\t2. Evolve",
-                    $"\t3. Select Attack",
-                    $"\t4. Random Attack",
+                    $"\t2. Raise Level",
+                    $"\t3. Evolve",
+                    $"\t4. Select Attack",
+                    $"\t5. Random Attack",
                 ];
 
                 foreach (var item in menu)
@@ -365,15 +366,24 @@ namespace Simulator
                             break;
                         case 2:
                             ConsoleUI.Clear();
-                            pokemon.CurrentEvolution.Evolve();
+                            
+                            pokemon.RaiseLevel();
+                            //if ((pokemon.CurrentEvolution.Level - pokemon.Level) > 9)
+                            //    pokemon.CurrentEvolution.Evolve();
+                            
+
                             break;
                         case 3:
+                            ConsoleUI.Clear();
+                            pokemon.CurrentEvolution.Evolve();
+                            break;
+                        case 4:
                             // Select Attack
                             ConsoleUI.Clear();
                             SelectAttack(pokemon);
                             DisplayPokemonInfo(pokemon);
                             break;
-                        case 4:
+                        case 5:
                             // Random Attack
                             ConsoleUI.Clear();
                             ConsoleUI.WriteLine("\n\n");
