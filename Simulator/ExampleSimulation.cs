@@ -1,6 +1,4 @@
 ﻿using PokemonSimulator.Library;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using UI;
 
 namespace Simulator
@@ -10,10 +8,9 @@ namespace Simulator
         internal Exception? SimulationException { get; private set; } = null;
         internal int? SelectedMenuIndex { get; private set; }
         internal Pokemon? SelectedPokemon { get; private set; } = null;
-        internal List<Pokemon> PokemonList { get; private set; } = [];
 
         // Create individual attack instances that can be copied to new Pokemon instances
-        private readonly IEnumerable<Attack> AllAttacks = [
+        private readonly IEnumerable<Attack> _allAttacks = [
             new("Fire Fang", ElementType.Fire, 20),
             new("Heat Tackle", ElementType.Fire, 30),
             new("Ember", ElementType.Fire, 40),
@@ -24,6 +21,16 @@ namespace Simulator
             new("Leech Seed", ElementType.Grass, 20),
             new("Razor Leaf", ElementType.Grass, 30),
         ];
+        // Return a copy of the private _allAttacks
+        public List<Attack> AllAttacks { get => [.. _allAttacks]; }
+
+        private IEnumerable<Pokemon> _pokemonList = [];
+        public List<Pokemon> PokemonList
+        {
+            // Return a copy of the private _pokemonList
+            get { return _pokemonList.ToList(); }
+            set { _pokemonList = value; }
+        }
 
         private readonly Random _random = new();
 
@@ -53,8 +60,8 @@ namespace Simulator
 
         private List<Attack> GenerateRandomAttacks(int count)
         {
-            // Create a copy of AllAttacks
-            List<Attack> attacks = [.. AllAttacks];
+            // Get the AllAttacks copy
+            List<Attack> attacks = AllAttacks;
             int randomIndex = _random.Next(attacks.Count);
             List<Attack> result = [];
 
