@@ -57,8 +57,9 @@ namespace UI
         public static void Debug(string message)
         {
             ConsoleUI.ForegroundColor = ConsoleColor.Cyan;
-            ConsoleUI.WriteLine($"[DEBUG] {message}");
+            ConsoleUI.Write($"\n[DEBUG] ");
             ConsoleUI.ResetColor();
+            ConsoleUI.Write($"{message}");
         }
     }
 }

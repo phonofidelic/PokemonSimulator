@@ -366,7 +366,12 @@ namespace Simulator
                             break;
                         case 2:
                             ConsoleUI.Clear();
-                            pokemon.CurrentEvolution.RaiseLevel();
+                            
+                            pokemon.RaiseLevel();
+                            //if ((pokemon.CurrentEvolution.Level - pokemon.Level) > 9)
+                            //    pokemon.CurrentEvolution.Evolve();
+                            
+
                             break;
                         case 3:
                             ConsoleUI.Clear();
