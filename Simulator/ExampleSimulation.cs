@@ -29,7 +29,8 @@ namespace Simulator
         {
             // Return a copy of the private _pokemonList
             get { return _pokemonList.ToList(); }
-            set { _pokemonList = value; }
+            // ToDo: add validation?
+            protected set { _pokemonList = value; }
         }
 
         private readonly Random _random = new();
@@ -53,8 +54,42 @@ namespace Simulator
                 //new Charmander(GenerateRandomAttacks(3)) // <- Cannot implicitly convert Charmander to WaterPokemon
             ];
 
+            // Get a list of Charmanders
+            var charmanderList = pokemonList.Where(pokemon => pokemon is Charmander).ToList();
+            ConsoleUI.WriteLine("charmanderList:");
+            foreach (var charmander in charmanderList) {
+                ConsoleUI.Write($"Is {charmander} a Charmander? "); 
+                ConsoleUI.ForegroundColor = ConsoleColor.Green;
+                ConsoleUI.Write($"{charmander is Charmander}\n"); // True
+                ConsoleUI.ResetColor();
+            }
+
+            charmanderList[1].Evolve();
+            var singleCharmander = charmanderList[0];
+            var singleCharmelion = charmanderList[1];
+
+            ConsoleUI.WriteLine("\ncharmanderList after Evolve:");
+            foreach (var charmander in charmanderList)
+            {
+                ConsoleUI.Write($"Is {charmander} still a Charmander? "); 
+                ConsoleUI.ForegroundColor = ConsoleColor.Green;
+                ConsoleUI.Write($"{charmander is Charmander}\n"); // True
+                ConsoleUI.ResetColor();
+            }
+
+            ConsoleUI.Write($"Is {singleCharmelion}.CurrentEvolution still a Charmander? ");
+            ConsoleUI.ForegroundColor = ConsoleColor.Green;
+            ConsoleUI.Write($"{singleCharmander.CurrentEvolution is Charmander}\n"); // True
+            ConsoleUI.ResetColor();
+
+            ConsoleUI.Write($"\nIs {singleCharmelion}.CurrentEvolution still a Charmander? ");
+            ConsoleUI.ForegroundColor = ConsoleColor.Red;
+            ConsoleUI.Write($"{singleCharmelion.CurrentEvolution is Charmander}\n"); // False
+            ConsoleUI.ResetColor();
+
             PokemonList = pokemonList;
 
+            ConsoleUI.PromptForContinue("Press any key to start the simulation");
             DisplayPokemonList(PokemonList);
         }
 
