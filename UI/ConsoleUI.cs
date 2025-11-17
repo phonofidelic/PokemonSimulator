@@ -48,6 +48,11 @@ namespace UI
             WriteInfo("\n\nPress any key to continue");
             ReadKey(intercept: true);
         }
+        public static void PromptForContinue(string message)
+        {
+            WriteInfo($"\n\n{message}");
+            ReadKey(intercept: true);
+        }
 
         public static void Debug(string message)
         {
